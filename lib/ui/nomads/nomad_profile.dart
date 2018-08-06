@@ -14,6 +14,27 @@ class NomadProfileScreen extends StatefulWidget {
 }
 
 class _NomadProfileScreenState extends State<NomadProfileScreen> {
+  bool _isBlocked;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseDatabase.instance
+        .reference()
+        .child("user")
+        .child(User.uid)
+        .child("blockedUser")
+        .child(widget.userSnapshot.key)
+        .once()
+        .then((snapshot) {
+      if (snapshot.value != null) {
+        setState(() => _isBlocked = true);
+      } else {
+        setState(() => _isBlocked = false);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,14 +51,29 @@ class _NomadProfileScreenState extends State<NomadProfileScreen> {
                             builder: (BuildContext context) => ProfileScreen()),
                       ),
                 )
-              : IconButton(
-                  icon: Icon(Icons.message),
-                  onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                ChatScreen(widget.userSnapshot)),
-                      ),
+              : Row(
+                  children: <Widget>[
+                    _isBlocked == null
+                        ? Container(
+                            height: 0.0,
+                            width: 0.0,
+                          )
+                        : IconButton(
+                            icon:
+                                Icon(_isBlocked ? Icons.restore : Icons.block),
+                            onPressed: () => _isBlocked
+                                ? showUnblockDialog(context)
+                                : showBlockDialog(context)),
+                    IconButton(
+                      icon: Icon(Icons.message),
+                      onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    ChatScreen(widget.userSnapshot)),
+                          ),
+                    ),
+                  ],
                 ),
         ],
       ),
@@ -73,9 +109,9 @@ class _NomadProfileScreenState extends State<NomadProfileScreen> {
           ),
           Padding(padding: const EdgeInsets.symmetric(vertical: 8.0)),
           widget.userSnapshot.value["showLocation"] != null &&
-          widget.userSnapshot.value["showLocation"] &&
-          widget.userSnapshot.value["location"].toString().isNotEmpty &&
-          widget.userSnapshot.value["location"] != null
+                  widget.userSnapshot.value["showLocation"] &&
+                  widget.userSnapshot.value["location"].toString().isNotEmpty &&
+                  widget.userSnapshot.value["location"] != null
               ? ListTile(
                   leading: Icon(Icons.location_on),
                   title: Text(widget.userSnapshot.value["location"],
@@ -135,5 +171,67 @@ class _NomadProfileScreenState extends State<NomadProfileScreen> {
         ],
       ),
     );
+  }
+
+  void showBlockDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Block user"),
+            content: Text(
+                "Do you really want to block this user? You will not be able to receive messages anymore until you unblock the user."),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("block"),
+                onPressed: () {
+                  FirebaseDatabase.instance
+                      .reference()
+                      .child("user")
+                      .child(User.uid)
+                      .child("blockedUser")
+                      .update({widget.userSnapshot.key: "blocked"});
+                  setState(() => _isBlocked = true);
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                child: Text("cancel"),
+                onPressed: () => Navigator.pop(context),
+              )
+            ],
+          );
+        });
+  }
+
+  void showUnblockDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Unblock user"),
+            content: Text("Do you want to unblock this user?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("unblock"),
+                onPressed: () {
+                  FirebaseDatabase.instance
+                      .reference()
+                      .child("user")
+                      .child(User.uid)
+                      .child("blockedUser")
+                      .child(widget.userSnapshot.key)
+                      .remove();
+                  setState(() => _isBlocked = false);
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                child: Text("cancel"),
+                onPressed: () => Navigator.pop(context),
+              )
+            ],
+          );
+        });
   }
 }

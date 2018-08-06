@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:nomad_hub/utils/auth.dart';
 import 'package:nomad_hub/utils/image_compressor.dart';
 import 'package:nomad_hub/utils/user.dart';
@@ -29,6 +28,7 @@ class ChatScreenState extends State<ChatScreen> {
       new TextEditingController();
   bool _isComposingMessage = false;
   DatabaseReference _chatReference;
+  bool _isBlocked;
 
   @override
   void dispose() {
@@ -43,9 +43,10 @@ class ChatScreenState extends State<ChatScreen> {
         .child(widget.userSnapshot.key);
 
     reference.once().then((snapshot) {
-      if (snapshot.value["timestamp"] != null)
+      if (snapshot.value != null && snapshot.value["timestamp"] != null) {
         reference.update(
             {"timestampChecked": DateTime.now().millisecondsSinceEpoch});
+      }
     });
   }
 
@@ -62,7 +63,14 @@ class ChatScreenState extends State<ChatScreen> {
     _chatReference =
         FirebaseDatabase.instance.reference().child("chat").child(chatId);
 
-    setState(() {});
+    if (widget.userSnapshot.value["blockedUser"] != null &&
+        widget.userSnapshot.value["blockedUser"]
+            .toString()
+            .contains(User.uid)) {
+      setState(() => _isBlocked = true);
+    } else {
+      setState(() => _isBlocked = false);
+    }
   }
 
   @override
@@ -120,7 +128,9 @@ class ChatScreenState extends State<ChatScreen> {
                   Container(
                     decoration:
                         BoxDecoration(color: Theme.of(context).cardColor),
-                    child: _buildTextComposer(),
+                    child: _isBlocked
+                        ? Text("You are blocked by this user")
+                        : _buildTextComposer(),
                   ),
                 ],
               ),
@@ -284,17 +294,22 @@ class ChatScreenState extends State<ChatScreen> {
     });
 
     //send notification
-    FirebaseDatabase.instance.reference().child("admin").child("fcm").once().then((snapshot) {
+    FirebaseDatabase.instance
+        .reference()
+        .child("admin")
+        .child("fcm")
+        .once()
+        .then((snapshot) {
       String data =
           '{"notification": {"body": "${messageText ?? "image"}","title": '
-          '"${User.displayName}"}, "priority": "high", "data": {"click_action": '
+          '"${User
+          .displayName}"}, "priority": "high", "data": {"click_action": '
           '"FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": '
           '"${widget.userSnapshot.value["fcm_token"]}"}';
       String url = "https://fcm.googleapis.com/fcm/send";
       Map<String, String> headers = {
         "Content-Type": "application/json",
-        "Authorization":
-        "key=${snapshot.value["serverkey"]}"
+        "Authorization": "key=${snapshot.value["serverkey"]}"
       };
       http.post(url, headers: headers, body: data);
     });

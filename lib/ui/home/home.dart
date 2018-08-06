@@ -302,13 +302,14 @@ class MessageCard extends StatelessWidget {
                                 textController.text;
                             return data;
                           });
-                    Navigator.pop(context);
+                    Navigator.popUntil(context, ModalRoute.withName("/"));
                   }
                 },
               ),
               FlatButton(
                 child: Text("cancel"),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.popUntil(context, ModalRoute.withName("/")),
               )
             ],
           );
