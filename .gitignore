@@ -14,7 +14,6 @@ google-services.json
 
 vcs.xml
 
-*.iml
 .gradle
 local.properties
 .idea/libraries/Dart_Packages.xml
@@ -23,6 +22,4 @@ local.properties
 .idea/workspace.xml
 .idea/libraries
 .idea
-/build
-/captures
-.externalNativeBuild
+*.iml
