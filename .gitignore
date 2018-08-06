@@ -16,11 +16,13 @@ vcs.xml
 
 *.iml
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+local.properties
+.idea/libraries/Dart_Packages.xml
+.idea/libraries/Dart_SDK.xml
+.idea/libraries/Flutter_Plugins.xml
+.idea/workspace.xml
+.idea/libraries
 .idea
-.DS_Store
 /build
 /captures
 .externalNativeBuild
