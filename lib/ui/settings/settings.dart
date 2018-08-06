@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:nomad_hub/ui/settings/eula.dart';
 import 'package:nomad_hub/ui/settings/login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:nomad_hub/ui/settings/privacy_policy.dart';
@@ -145,8 +146,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     MaterialPageRoute(
                         builder: (BuildContext context) =>
                             PrivacyPolicyScreen())),
-                leading: Icon(Icons.info_outline),
+                leading: Icon(Icons.description),
                 title: Text("Privacy Policy"),
+              ),
+              Divider(height: 1.0),
+              ListTile(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            EulaScreen())),
+                leading: Icon(Icons.info_outline),
+                title: Text("EULA"),
               ),
               Divider(height: 1.0),
               ListTile(

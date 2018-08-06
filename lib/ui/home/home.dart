@@ -188,24 +188,31 @@ class MessageCard extends StatelessWidget {
                   ),
                 ),
                 Expanded(child: Container(height: 0.0, width: 0.0)),
-                messageSnapshot.value["senderUid"] != User.uid
-                    ? Container(height: 0.0, width: 0.0)
-                    : PopupMenuButton(
-                        itemBuilder: (BuildContext context) =>
-                            <PopupMenuItem<String>>[
-                              PopupMenuItem(
-                                child: FlatButton(
-                                    child: Text("Delete"),
-                                    onPressed: () {
-                                      FirebaseDatabase.instance
-                                          .reference()
-                                          .child("broadcast")
-                                          .child(messageSnapshot.key)
-                                          .remove();
-                                      Navigator.pop(context);
-                                    }),
-                              ),
-                            ]),
+                PopupMenuButton(
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuItem<String>>[
+                          messageSnapshot.value["senderUid"] != User.uid
+                              ? PopupMenuItem(
+                                  child: FlatButton(
+                                      child: Text("Report"),
+                                      onPressed: () {
+                                        showReportDialog(context);
+                                        //   Navigator.pop(context);
+                                      }),
+                                )
+                              : PopupMenuItem(
+                                  child: FlatButton(
+                                      child: Text("Delete"),
+                                      onPressed: () {
+                                        FirebaseDatabase.instance
+                                            .reference()
+                                            .child("broadcast")
+                                            .child(messageSnapshot.key)
+                                            .remove();
+                                        Navigator.pop(context);
+                                      }),
+                                ),
+                        ]),
               ],
             ),
             new Padding(
@@ -225,8 +232,11 @@ class MessageCard extends StatelessWidget {
                     Icons.message,
                     size: 20.0,
                   ),
-                  Padding(padding: const EdgeInsets.only(right: 8.0),),
-                  Text(messageSnapshot.value["commentsCounter"]?.toString() ?? "0"),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                  ),
+                  Text(messageSnapshot.value["commentsCounter"]?.toString() ??
+                      "0"),
                 ],
               ),
             ),
@@ -244,5 +254,64 @@ class MessageCard extends StatelessWidget {
         .once();
 
     return reference.value["photoUrl"];
+  }
+
+  void showReportDialog(BuildContext context) {
+    final GlobalKey<FormState> formKey = GlobalKey();
+    final TextEditingController textController = TextEditingController();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Report"),
+            content: Form(
+                key: formKey,
+                child: TextFormField(
+                  controller: textController,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    hintText: "Reason",
+                  ),
+                  validator: (text) {
+                    if (text.trim().isEmpty) {
+                      return "Please name a reason";
+                    }
+                  },
+                )),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("report"),
+                onPressed: () {
+                  if (formKey.currentState.validate()) {
+                    FirebaseDatabase.instance
+                        .reference()
+                        .child("reports")
+                        .child(messageSnapshot.key)
+                          ..update({
+                            "senderUid": messageSnapshot.value["senderUid"],
+                            "postText": messageSnapshot.value["text"]
+                          })
+                          ..runTransaction((MutableData data) async {
+                            if (data.value != null &&
+                                data.value["reportCount"] != null) {
+                              data.value["reportCount"]++;
+                            } else {
+                              data.value["reportCount"] = 1;
+                            }
+                            data.value["reason${data.value["reportCount"]}"] =
+                                textController.text;
+                            return data;
+                          });
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+              FlatButton(
+                child: Text("cancel"),
+                onPressed: () => Navigator.pop(context),
+              )
+            ],
+          );
+        });
   }
 }

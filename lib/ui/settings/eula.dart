@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class PrivacyPolicyScreen extends StatelessWidget {
+class EulaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Privacy Policy"),
+        title: Text("EULA"),
       ),
       body: ListView(
         children: <Widget>[
@@ -57,7 +57,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
           Text(
-            "2.2 Use Restrictions",
+            "2.1 Use Restrictions",
             style: TextStyle(fontSize: 20.0),
           ),
           Padding(
@@ -71,7 +71,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
-          Text("2.3 Copyright Restriction", style: TextStyle(fontSize: 20.0),),
+          Text("2.2 Copyright Restriction", style: TextStyle(fontSize: 20.0),),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
@@ -87,7 +87,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
-          Text("2.4 Limitation of Responsibility", style: TextStyle(fontSize: 20.0),),
+          Text("2.3 Limitation of Responsibility", style: TextStyle(fontSize: 20.0),),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
@@ -99,7 +99,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
-          Text("2.5 Warranties", style: TextStyle(fontSize: 20.0),),
+          Text("2.4 Warranties", style: TextStyle(fontSize: 20.0),),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
@@ -107,7 +107,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
-          Text("2.6 Governing Law", style: TextStyle(fontSize: 20.0),),
+          Text("2.5 Governing Law", style: TextStyle(fontSize: 20.0),),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
@@ -115,7 +115,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),
-          Text("2.7 Termination", style: TextStyle(fontSize: 20.0),),
+          Text("2.6 Termination", style: TextStyle(fontSize: 20.0),),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
           ),

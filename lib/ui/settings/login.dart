@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nomad_hub/ui/settings/eula.dart';
 import 'package:nomad_hub/utils/auth.dart';
 import 'package:nomad_hub/main.dart';
 import 'package:nomad_hub/ui/settings/privacy_policy.dart';
@@ -106,16 +107,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         onChanged: (b) => setState(() => _isPolicyAccepted = b),
                       ),
                       Flexible(
-                        child: FlatButton(
-                          onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      PrivacyPolicyScreen())),
-                          child: Text(
-                            "I have read and accept the privacy policy (click here to read)",
-                            style: TextStyle(color: _privacyPolicyColor),
-                          ),
+                        child: Column(
+                          children: <Widget>[
+                            FlatButton(
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          PrivacyPolicyScreen())),
+                              child: Text(
+                                "I have read and accept the privacy policy (click here to read)",
+                                style: TextStyle(color: _privacyPolicyColor),
+                              ),
+                            ),
+                            FlatButton(
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          EulaScreen())),
+                              child: Text(
+                                "I have read and accept the EULA (click here to read)",
+                                style: TextStyle(color: _privacyPolicyColor),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
