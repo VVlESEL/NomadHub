@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:nomad_hub/utils/themes.dart';
 import 'package:nomad_hub/ui/chat/chats.dart';
@@ -37,6 +38,10 @@ class _MainScaffoldState extends State<MainScaffold> {
   @override
   void initState() {
     super.initState();
+
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
     _initUserOperations();
   }
 
@@ -58,26 +63,24 @@ class _MainScaffoldState extends State<MainScaffold> {
       });
     });
 
-    if(!_isInitialized) return;
+    if (!_isInitialized) return;
 
-    var userReference = FirebaseDatabase.instance
-        .reference()
-        .child("user")
-        .child(User.uid);
+    var userReference =
+        FirebaseDatabase.instance.reference().child("user").child(User.uid);
 
     //check for new messages on application start
     _isNewMessage = false;
 
     userReference.once().then((snapshot) {
       var messages = snapshot.value["newMessages"];
-      if(messages != null && messages > 0){
+      if (messages != null && messages > 0) {
         setState(() => _isNewMessage = true);
       }
     });
 
     //set listener for new chat messages
     userReference.child("newMessages").onValue.listen((Event event) {
-      if(event.snapshot.value > 0){
+      if (event.snapshot.value > 0) {
         setState(() => _isNewMessage = true);
       }
     });
@@ -132,9 +135,9 @@ class _MainScaffoldState extends State<MainScaffold> {
                       title: Image.asset("images/icon_nomad_hub_vertical.png"),
                     ),
                     body: Container(child: _getBody()),
-                      bottomNavigationBar: BottomNavigationBar(
-                        fixedColor: Colors.black,
-                        currentIndex: _menuIndex,
+                    bottomNavigationBar: BottomNavigationBar(
+                      fixedColor: Colors.black,
+                      currentIndex: _menuIndex,
                       onTap: (int index) {
                         setState(() {
                           _menuIndex = index;
@@ -154,7 +157,10 @@ class _MainScaffoldState extends State<MainScaffold> {
                         BottomNavigationBarItem(
                           title: Text("Chat"),
                           icon: _isNewMessage
-                              ? Icon(Icons.notifications_active, color: Colors.redAccent,)
+                              ? Icon(
+                                  Icons.notifications_active,
+                                  color: Colors.redAccent,
+                                )
                               : Icon(Icons.chat),
                         ),
                         BottomNavigationBarItem(
