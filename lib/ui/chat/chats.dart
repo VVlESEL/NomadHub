@@ -17,7 +17,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
       .child("user")
       .child(User.uid)
       .child("chats");
-  
 
   @override
   void initState(){

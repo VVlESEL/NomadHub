@@ -33,6 +33,9 @@ class User {
 
   //initializes the user with all the user specific data from auth and database
   static Future<bool> initialize() async {
+    //enable database caching
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
+
     //get user data from auth
     await Auth.auth.currentUser().then((user) {
       uid = user.uid;
@@ -44,7 +47,11 @@ class User {
     });
 
     //get reference to the user db entry
-    userReference = FirebaseDatabase.instance.reference().child("user").child(User.uid);
+    userReference =
+        FirebaseDatabase.instance.reference().child("user").child(User.uid);
+
+    //keep user data synched
+    userReference.keepSynced(true);
 
     //setup gps listener
     Location().onLocationChanged.listen((currentLocation) async {
@@ -176,7 +183,7 @@ class User {
         longitude = currentLocation["longitude"];
       });
 
-      if(latitude == null || longitude == null) {
+      if (latitude == null || longitude == null) {
         print("User updateLocation! Unable to receive current location!");
         return false;
       }

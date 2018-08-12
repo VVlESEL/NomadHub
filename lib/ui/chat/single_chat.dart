@@ -63,6 +63,9 @@ class ChatScreenState extends State<ChatScreen> {
     _chatReference =
         FirebaseDatabase.instance.reference().child("chat").child(chatId);
 
+    //keep this chats data synched
+    _chatReference.keepSynced(true);
+
     if (widget.userSnapshot.value["blockedUser"] != null &&
         widget.userSnapshot.value["blockedUser"]
             .toString()
