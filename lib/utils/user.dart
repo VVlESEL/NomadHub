@@ -71,7 +71,7 @@ class User {
         onLaunch: (Map<String, dynamic> message) {},
       );
 
-      var token = await firebaseMessaging.getToken();
+      var token = await firebaseMessaging.getToken().timeout(Duration(milliseconds: 1500));
       userReference.update({"fcm_token": token}).then((b) {
         print("User initialize! FCM token: $token");
       }).catchError((error) {
