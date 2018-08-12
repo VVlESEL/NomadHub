@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:nomad_hub/utils/auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:location/location.dart';
 import 'package:geocoder/geocoder.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class User {
@@ -67,8 +69,20 @@ class User {
 
       firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) {},
-        onResume: (Map<String, dynamic> message) {},
-        onLaunch: (Map<String, dynamic> message) {},
+        onResume: (Map<String, dynamic> message) {
+          //triggers if app runs in background
+          String from = message["from"];
+          if(from.contains("topics")){
+            from = from.substring(7);
+            //push to the post
+          }else{
+            print(message.toString());
+            //push to comment section
+          }
+        },
+        onLaunch: (Map<String, dynamic> message) {
+          //triggers if app is not active
+        },
       );
 
       var token = await firebaseMessaging.getToken().timeout(Duration(milliseconds: 1500));

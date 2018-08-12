@@ -9,6 +9,7 @@ import 'package:nomad_hub/ui/nomads/nomad_profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class SinglePostScreen extends StatefulWidget {
   final DataSnapshot messageSnapshot;
@@ -241,7 +242,8 @@ class _SinglePostScreenState extends State<SinglePostScreen> {
       'senderPhotoUrl': User.photoUrl,
     });
 
-    _postReference.parent()
+    _postReference
+        .parent()
         .child("commentsCounter")
         .runTransaction((MutableData data) async {
       if (data.value != null) {
@@ -250,6 +252,30 @@ class _SinglePostScreenState extends State<SinglePostScreen> {
         data.value = 1;
       }
       return data;
+    });
+
+    //subscribe to topic for notifications
+    User.firebaseMessaging.subscribeToTopic(widget.messageSnapshot.key);
+
+    //send notification
+    FirebaseDatabase.instance
+        .reference()
+        .child("admin")
+        .child("fcm")
+        .once()
+        .then((snapshot) {
+      String data = '{"notification": {"body": "${widget.messageSnapshot.value["senderName"]}: ${widget.messageSnapshot
+          .value["text"]}","title": '
+          '"${User.displayName} commented this post"}, "priority": "high", "data": {"click_action": '
+          '"FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": '
+          '"/topics/${widget.messageSnapshot.key}"}';
+      String url = "https://fcm.googleapis.com/fcm/send";
+      Map<String, String> headers = {
+        "Content-Type": "application/json",
+        "Authorization": "key=${snapshot.value["serverkey"]}"
+      };
+
+      http.post(url, headers: headers, body: data);
     });
 
     Auth.analytics.logEvent(name: 'send_comment');
@@ -317,9 +343,11 @@ class Comment extends StatelessWidget {
                                         .remove();
                                     Navigator.pop(context);
 
-                                    postReference.parent()
+                                    postReference
+                                        .parent()
                                         .child("commentsCounter")
-                                        .runTransaction((MutableData data) async {
+                                        .runTransaction(
+                                            (MutableData data) async {
                                       if (data.value != null) {
                                         data.value--;
                                       } else {

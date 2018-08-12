@@ -24,7 +24,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
           FlatButton(
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                _databaseReference.push().set({
+                final ref = _databaseReference.push()..set({
                   "senderUid": User.uid,
                   "senderName": User.displayName,
                   "latitude": User.latitude,
@@ -37,6 +37,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   "time": DateFormat.yMd().add_Hm().format(DateTime.now()),
                   "commentsCounter": 0
                 });
+
+                //subscribe to topic for notifications
+                User.firebaseMessaging.subscribeToTopic(ref.key);
 
                 Navigator.pop(context);
               }
