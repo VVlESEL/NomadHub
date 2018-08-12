@@ -74,6 +74,8 @@ class User {
       var token = await firebaseMessaging.getToken();
       userReference.update({"fcm_token": token}).then((b) {
         print("User initialize! FCM token: $token");
+      }).catchError((error) {
+        print("User initialize! FCM token update failed!");
       });
     } catch (error) {
       print("User initialize! Something went wrong (fmc token)! ${error
