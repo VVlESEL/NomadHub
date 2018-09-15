@@ -5,7 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:location/location.dart';
 import 'package:geocoder/geocoder.dart';
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class User {
@@ -56,7 +55,7 @@ class User {
     userReference.keepSynced(true);
 
     //setup gps listener
-    Location().onLocationChanged.listen((currentLocation) async {
+    Location().onLocationChanged().listen((currentLocation) async {
       //update current coordinates
       latitude = currentLocation["latitude"];
       longitude = currentLocation["longitude"];
@@ -193,7 +192,7 @@ class User {
       //check if gps is active
       Location().getLocation;
       //setup gps listener
-      Location().onLocationChanged.listen((currentLocation) async {
+      Location().onLocationChanged().listen((currentLocation) async {
         //update current coordinates
         latitude = currentLocation["latitude"];
         longitude = currentLocation["longitude"];

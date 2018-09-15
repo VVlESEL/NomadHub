@@ -347,7 +347,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   } else {
                     Scaffold.of(context).showSnackBar(SnackBar(
                           content: Text(
-                              "Request failed! Please check your inputs and make sure you are connected to the internet."),
+                              "Request failed! Please check your inputs and "
+                                  "make sure you are connected to the internet. "
+                                  "If you have connection the e-mail has most "
+                                  "likely already been registered."),
                           duration: Duration(milliseconds: 3000),
                         ));
                   }
